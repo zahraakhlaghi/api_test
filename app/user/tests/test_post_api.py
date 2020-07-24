@@ -64,16 +64,6 @@ class PostApiTests(TestCase):
             else:
                 self.assertEqual(payload[key], getattr(post, key))        
 
-    def test_view_post_detail(self):
-        """*Test viewing a post detail"""
-        post = sample_post(sample_category())
-        post.tags.add(sample_tag(name='test tag'))
-
-        url = detail_url(post.id)
-        res = self.client.get(url)
-
-        serializer = PostDetailSerializer(post)
-        self.assertEqual(res.data, serializer.data)
 
     def test_create_post_with_tags(self):
         """Test creating a post with tags"""
@@ -118,7 +108,7 @@ class PostApiTests(TestCase):
         self.assertIn(new_tag, tags)
 
     def test_full_update_post(self):
-        """*Test updating a post with put"""
+        """Test updating a post with put"""
         post = sample_post(sample_category())
         post.tags.add(sample_tag(name='tag1'))
         category=sample_category(name='sample category')
@@ -132,11 +122,13 @@ class PostApiTests(TestCase):
 
         post.refresh_from_db()
 
+
+        tags = post.tags.all()
+        self.assertEqual(len(tags), 0)  
+
         self.assertEqual(post.title, payload['title'])
         self.assertEqual(post.content, payload['content'])
         
-        tags = post.tags.all()
-        self.assertEqual(len(tags), 0)   
 
     def test_filter_post_by_tags(self):
         """Test returning post with specific tags"""

@@ -51,8 +51,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
     search_fields = ('title','content')
     ordering_fields = '__all__'
-    @action(methods=['get'], detail=True, permission_classes=[permissions.AllowAny])
-
     
     def _params_to_ints(self, qs):
         """Convert a list of string IDs to a list of integers"""
@@ -68,23 +66,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-    def get_serializer_class(self):
-        """Return appropriate serializer class"""
-        if self.action == 'retrieve':
-            return serializers.PostDetailSerializer
-        return self.serializer_class
 
-    def get_object(self, pk):
-        return Post.objects.get(pk=pk)
-
-    def patch(self, request, pk):
-        testmodel_object = self.get_object(pk)
-        serializer = PostSerializer(testmodel_object, data=request.data, partial=True) # set partial=True to update a data partially
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(code=201, data=serializer.data)
-        return JsonResponse(code=400, data="wrong parameters")  
-
+    @action(detail=True, methods=['put'], permission_classes=[permissions.AllowAny])
+    def put(self,request,pk=None):
+        """Handle updatig an object"""
+        return Response({'method': 'PUT'})
 
 
 

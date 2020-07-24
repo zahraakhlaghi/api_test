@@ -29,10 +29,7 @@ class PostSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Post
-        fields = (
-            'id','title','content','category_id','status',
-            'cdt','udt'
-            )
+        fields = '__all__'
         read_only_fields = ('id',)
 
 class PostDetailSerializer(PostSerializer):

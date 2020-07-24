@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from core.models import Tag,Post,Category
 from . import serializers
+
   
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CategorySerializer
@@ -45,12 +46,14 @@ class PostViewSet(viewsets.ModelViewSet):
     """Manage post in the database"""
     serializer_class = serializers.PostSerializer
     queryset = Post.objects.all()
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     permission_classes = (permissions.AllowAny,)
 
     search_fields = ('title','content')
-    ordering_fields = ('title')
-    @action(methods=['get'], detail=True, permission_classes=[permissions.AllowAny])   
+    ordering_fields = '__all__'
+    @action(methods=['get'], detail=True, permission_classes=[permissions.AllowAny])
 
+    
     def _params_to_ints(self, qs):
         """Convert a list of string IDs to a list of integers"""
         return [int(str_id) for str_id in qs.split(',')]
@@ -71,9 +74,19 @@ class PostViewSet(viewsets.ModelViewSet):
             return serializers.PostDetailSerializer
         return self.serializer_class
 
-    def perform_create(self, serializer):
-        """Create a new post"""
-        serializer.save()
+    def get_object(self, pk):
+        return Post.objects.get(pk=pk)
+
+    def patch(self, request, pk):
+        testmodel_object = self.get_object(pk)
+        serializer = PostSerializer(testmodel_object, data=request.data, partial=True) # set partial=True to update a data partially
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(code=201, data=serializer.data)
+        return JsonResponse(code=400, data="wrong parameters")  
+
+
+
 
     
 

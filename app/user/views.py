@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.models import Tag,Post,Category
 from . import serializers
 
+
   
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CategorySerializer
